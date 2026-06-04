@@ -1,0 +1,43 @@
+name: Gerar APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Cache Buildozer
+        uses: actions/cache@v4
+        with:
+          path: |
+            .buildozer
+            ~/.buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade buildozer cython virtualenv
+
+      - name: Compilar APK
+        run: buildozer android debug
+
+      - name: Renomear APK
+        run: |
+          mkdir -p apk_final
+          cp bin/*.apk apk_final/Express_Local_OS_V3_By_Maicon.apk
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Express_Local_OS_V3_By_Maicon
+          path: apk_final/Express_Local_OS_V3_By_Maicon.apk
