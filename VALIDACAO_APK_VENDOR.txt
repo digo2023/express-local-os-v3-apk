@@ -1,0 +1,7 @@
+Validação executada:
+- pasta interna sem espaços: sistema_express
+- produtos.py compilado sem erro
+- compileall executado sem erro
+- buildozer.spec reduzido para requirements = python3,kivy==2.3.0
+- rich, openpyxl e pypdf incluídos como bibliotecas locais em sistema_express/
+- caches removidos antes do empacotamento

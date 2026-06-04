@@ -1,0 +1,1 @@
+Runtime corrigido: execução por import sistema_express.iniciar, sem leitura física de iniciar.py; Rich desativado no APK.

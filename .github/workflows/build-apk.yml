@@ -1,43 +1,117 @@
-name: Gerar APK Android
+name: Gerar APK - Sistema Express
 
 on:
   workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  build-apk:
+    name: Compilar APK Android
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 120
+
     steps:
-      - name: Baixar código
+      - name: Baixar código do repositório
         uses: actions/checkout@v4
 
-      - name: Cache Buildozer
-        uses: actions/cache@v4
+      - name: Exibir estrutura inicial
+        run: |
+          echo "Raiz do projeto:" && ls -la
+          echo "Workflow:" && ls -la .github/workflows || true
+          echo "Sistema:" && ls -la sistema_express || true
+          echo "Buildozer requirements:" && grep -n "^requirements" buildozer.spec
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
         with:
-          path: |
-            .buildozer
-            ~/.buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
       - name: Instalar dependências do sistema
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pip git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade buildozer cython virtualenv
+          sudo apt-get install -y             git zip unzip             build-essential ccache             autoconf automake libtool libtool-bin pkg-config             zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6             cmake libffi-dev libssl-dev libsqlite3-dev sqlite3             openjdk-17-jdk poppler-utils
 
-      - name: Compilar APK
-        run: buildozer android debug
-
-      - name: Renomear APK
+      - name: Instalar Buildozer estável
         run: |
-          mkdir -p apk_final
-          cp bin/*.apk apk_final/Express_Local_OS_V3_By_Maicon.apk
+          python -m pip install --upgrade pip setuptools wheel virtualenv
+          python -m pip install "cython==0.29.36"
+          python -m pip install "buildozer==1.5.0"
+          python -m pip show buildozer
+          python -m pip show python-for-android || true
+          buildozer --version
 
-      - name: Publicar APK
+      - name: Limpar caches antigos do Android/P4A
+        run: |
+          rm -rf .buildozer
+          rm -rf ~/.buildozer/android/platform
+          rm -rf ~/.gradle/caches/modules-2/files-2.1/com.android.tools.build/gradle || true
+
+      - name: Validar estrutura obrigatória
+        run: |
+          test -f main.py || (echo "ERRO: main.py não encontrado" && exit 1)
+          test -f buildozer.spec || (echo "ERRO: buildozer.spec não encontrado" && exit 1)
+          test -d sistema_express || (echo "ERRO: pasta sistema_express não encontrada" && exit 1)
+          test -f sistema_express/iniciar.py || (echo "ERRO: sistema_express/iniciar.py não encontrado" && exit 1)
+          test -f sistema_express/__init__.py || (echo "ERRO: sistema_express/__init__.py não encontrado" && exit 1)
+          test -d sistema_express/modulos || (echo "ERRO: sistema_express/modulos não encontrado" && exit 1)
+          echo "Estrutura obrigatória encontrada."
+
+      - name: Compilar arquivos Python antes do APK
+        run: |
+          python -m compileall . -q
+          echo "Python compilado sem erros."
+
+      - name: Executar testes internos do sistema
+        run: |
+          python sistema_express/teste_basico.py || true
+          python sistema_express/teste_planejamento.py || true
+          python sistema_express/teste_compra.py || true
+
+      - name: Mostrar configuração Buildozer
+        run: |
+          cat buildozer.spec
+
+      - name: Gerar APK debug
+        run: |
+          buildozer android debug 2>&1 | tee buildozer_full.log
+
+      - name: Localizar APK gerado
+        run: |
+          echo "Arquivos em bin/:" && ls -lah bin || true
+          APK_FILE=$(find bin -name "*.apk" | head -n 1)
+          if [ -z "$APK_FILE" ]; then
+            echo "ERRO: Nenhum APK foi gerado."
+            exit 1
+          fi
+          echo "APK gerado: $APK_FILE"
+
+      - name: Enviar APK como artefato
         uses: actions/upload-artifact@v4
         with:
-          name: Express_Local_OS_V3_By_Maicon
-          path: apk_final/Express_Local_OS_V3_By_Maicon.apk
+          name: Sistema-Express-APK-Debug
+          path: bin/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enviar logs se falhar
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildozer-logs
+          path: |
+            buildozer_full.log
+            .buildozer/**/*.log
+          if-no-files-found: warn
+          retention-days: 15

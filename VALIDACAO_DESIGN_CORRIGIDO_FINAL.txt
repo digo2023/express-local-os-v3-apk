@@ -1,0 +1,13 @@
+SISTEMA EXPRESS — DESIGN MODERNO PREMIUM CORRIGIDO FINAL
+
+Correções aplicadas:
+- Removidos emojis e símbolos incompatíveis que apareciam como quadrados no Android.
+- Ícones redesenhados por canvas Kivy, sem depender de fonte externa.
+- Dashboard redesenhado para ficar mais próximo dos prints aprovados.
+- Console de execução oculto na tela inicial e exibido somente ao abrir funções.
+- Botão VOLTAR clicável sem exibir 999.
+- Barra inferior moderna e botões por toque.
+- Ícone do APK atualizado com arte de Gestão de Estoque.
+- Código validado com compileall sem erro.
+
+Base funcional preservada: sistema_express.iniciar continua sendo executado por importação.

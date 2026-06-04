@@ -1,0 +1,23 @@
+VALIDAÇÃO TÉCNICA - SISTEMA EXPRESS APK
+
+Estrutura conferida:
+- main.py na raiz
+- buildozer.spec na raiz
+- .github/workflows/build-apk.yml
+- pasta sistema - express/iniciar.py
+- módulos Python do sistema
+
+Testes executados:
+- python -m compileall . -q
+- python sistema - express/ferramentas/teste_basico.py
+- python sistema - express/ferramentas/teste_planejamento.py
+- python sistema - express/ferramentas/teste_compra.py
+
+Correções aplicadas:
+- produtos.py reescrito com f-string corrigida
+- indentação validada
+- compilação Python validada
+- estrutura GitHub Actions preservada
+
+Observação:
+Para evitar enviar arquivos antigos, extraia este ZIP em uma pasta nova e envie o conteúdo dele para o GitHub.

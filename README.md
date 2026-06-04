@@ -1,12 +1,7 @@
-# EXPRESS LOCAL OS V3 APK — By Maicon
+# GESTÃO DE ESTOQUE EXPRESS COLORADO — APK Botões Reais
 
-Aplicativo Android local para gestão de estoque, entradas, saídas, conferência, alertas e backup.
-
-## Gerar APK
-1. Suba este projeto no GitHub.
-2. Abra Actions > Gerar APK Android.
-3. Clique em Run workflow.
-4. Baixe o APK em Artifacts.
-
-## Rodar no Termux apenas para enviar ao GitHub
-Use os comandos do arquivo `COMANDOS_TERMUX_GITHUB.txt`.
+Correção definitiva para tela estática:
+- Cards e ações agora usam Button padrão do Kivy.
+- A rolagem da tela principal fica livre e funcional.
+- Os toques nos cards chamam as funções do sistema.
+- Console técnico fica oculto e aparece somente ao tocar em uma função.

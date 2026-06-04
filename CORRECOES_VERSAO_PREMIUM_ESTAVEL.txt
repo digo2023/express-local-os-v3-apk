@@ -1,0 +1,16 @@
+VERSÃO PREMIUM ESTÁVEL — CORREÇÃO DO TRAVAMENTO
+
+Correções aplicadas:
+1. Removida a dependência da tela antiga em terminal interno, stdin/stdout e thread bloqueante.
+2. Todos os cards e botões agora executam callbacks nativos do Kivy, sem travar a tela.
+3. Criado painel direto com botões funcionais: cadastrar produto, entrada, saída, conferência, estoque, histórico, alertas, relatórios e backup.
+4. Banco SQLite local configurado com WAL, busy_timeout e escrita segura.
+5. Relatórios CSV e PDF simples válido gerados localmente, sem depender de biblioteca pesada no Android.
+6. Backup do banco de dados com cópia segura.
+7. Interface premium mantida em preto, azul e dourado, otimizada para tela do Samsung A06.
+8. Navegação inferior totalmente clicável: Início, Estoque, Ações, Relatórios e Mais.
+9. Controle de estoque baixo com alertas automáticos.
+10. Compilação Python validada com py_compile e compileall.
+
+Observação:
+O APK continuará sendo gerado pelo GitHub Actions. Após subir esta versão para o repositório, entre em Actions > Gerar APK - Sistema Express > Run workflow ou faça push na branch main.
